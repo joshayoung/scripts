@@ -2,7 +2,7 @@
 import subprocess
 
 def containers():
-    process = subprocess.Popen(["docker ps | sed '1 d' | awk '{ print $NF }'"], stdout=subprocess.PIPE, shell=True)
+    process = subprocess.Popen(["docker container ls | sed '1 d' | awk '{ print $NF }'"], stdout=subprocess.PIPE, shell=True)
     return process.communicate()[0].decode('utf-8').splitlines()
 
 def key(item):
@@ -22,6 +22,6 @@ for i, shell in enumerate(shells):
 selected_shell = input("Select Shell: ")
 
 container = running_docker_containers[key(selected_container)]
-command = 'docker exec -it ' + container + ' ' + shells[key(selected_shell)]
+command = 'docker container exec -it ' + container + ' ' + shells[key(selected_shell)]
 
 subprocess.call(command, shell=True)
