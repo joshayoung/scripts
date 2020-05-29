@@ -29,7 +29,10 @@ if str(selected_container) == 'q':
 for i, shell in enumerate(shells):
     print(str(i + 1) + ". " + shell);
 
-selected_shell = get_input("Select Shell: ")
+selected_shell = get_input("Select Shell (press 'q' to exit): ")
+
+if str(selected_shell) == 'q':
+    exit();
 
 container = running_docker_containers[keyi(selected_container)]
 command = 'docker container exec -it ' + container + ' ' + shells[keyi(selected_shell)]
