@@ -18,6 +18,9 @@ def keyi(item):
 running_docker_containers = containers()
 shells = ['sh', 'bash', 'zsh']
 
+if len(running_docker_containers) < 1:
+    exit("No containers running")
+
 for i, container in enumerate(running_docker_containers):
     print(str(i + 1) + ". " + container)
 
