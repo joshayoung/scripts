@@ -2,6 +2,12 @@
 import subprocess
 import sys
 
+command_through_cmd = []
+try: 
+    command_through_cmd = sys.argv[1].split(',')
+except IndexError:
+    ""
+
 def get_input(inp):
     if sys.version_info < (3, 0):
         return raw_input(inp)
@@ -17,7 +23,8 @@ def docker_running():
 
 def containers():
     process = subprocess.Popen(["docker container ls | sed '1 d' | awk '{ print $NF }'"], stdout=subprocess.PIPE, shell=True)
-    return process.communicate()[0].decode('utf-8').splitlines()
+    containers = process.communicate()[0].decode('utf-8').splitlines()
+    return list(set(containers) - set(command_through_cmd))
 
 def keyi(item):
     return int(item) - 1
@@ -28,7 +35,7 @@ running_docker_containers = containers()
 shells = ['sh', 'bash', 'zsh']
 
 if len(running_docker_containers) < 1:
-    exit("No containers running")
+    exit("No attachable containers running")
 
 for i, container in enumerate(running_docker_containers):
     print(str(i + 1) + ". " + container)
