@@ -8,12 +8,21 @@ def get_input(inp):
     else:
         return input(inp)
 
+def docker_running():
+    try:
+        subprocess.check_output("docker stats --no-stream", stderr=subprocess.STDOUT, shell=True)
+    except subprocess.CalledProcessError:
+        print "Docker not running"
+        exit()
+
 def containers():
     process = subprocess.Popen(["docker container ls | sed '1 d' | awk '{ print $NF }'"], stdout=subprocess.PIPE, shell=True)
     return process.communicate()[0].decode('utf-8').splitlines()
 
 def keyi(item):
     return int(item) - 1
+
+docker_running()
 
 running_docker_containers = containers()
 shells = ['sh', 'bash', 'zsh']
