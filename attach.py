@@ -40,7 +40,12 @@ if len(running_docker_containers) < 1:
 for i, container in enumerate(running_docker_containers):
     print(str(i + 1) + ". " + container)
 
-selected_container = str(get_input("Select Container (press 'q' to exit): "))
+while True:
+    selected_container = str(get_input("Select Container (press 'q' to exit): "))
+    if str(selected_container) == 'q':
+        exit();
+    if selected_container.isdigit() == True:
+        break
 
 if str(selected_container) == 'q':
     exit();
@@ -48,10 +53,13 @@ if str(selected_container) == 'q':
 for i, shell in enumerate(shells):
     print(str(i + 1) + ". " + shell);
 
-selected_shell = get_input("Select Shell (press 'q' to exit): ")
+while True:
+    selected_shell = get_input("Select Shell (press 'q' to exit): ")
+    if str(selected_shell) == 'q':
+        exit();
+    if selected_shell.isdigit() == True:
+        break
 
-if str(selected_shell) == 'q':
-    exit();
 
 container = running_docker_containers[keyi(selected_container)]
 command = 'docker container exec -it ' + container + ' ' + shells[keyi(selected_shell)]
