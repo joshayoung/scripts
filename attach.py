@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import subprocess
 import sys
+import os
 
 command_through_cmd = []
 try: 
@@ -26,13 +27,18 @@ def containers():
     containers = process.communicate()[0].decode('utf-8').splitlines()
     return list(set(containers) - set(command_through_cmd))
 
+def shells(cont):
+    command = "docker exec " + cont + " chsh -l"
+    process = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
+    shells = process.communicate()[0].decode('utf-8').splitlines()
+    return list(shells)
+
 def keyi(item):
     return int(item) - 1
 
 docker_running()
 
 running_docker_containers = containers()
-shells = ['sh', 'bash', 'zsh']
 
 if len(running_docker_containers) < 1:
     exit("No attachable containers running")
@@ -50,6 +56,18 @@ while True:
 if str(selected_container) == 'q':
     exit();
 
+def clean_and_dedupe(shells):
+    cleaned_shell = []
+    for i, shell in enumerate(shells):
+        base = os.path.basename(shell)
+        if base in cleaned_shell:
+            continue
+        cleaned_shell.append(base)
+    return cleaned_shell
+
+container = running_docker_containers[keyi(selected_container)]
+shells = clean_and_dedupe(shells(container))
+
 for i, shell in enumerate(shells):
     print(str(i + 1) + ". " + shell);
 
@@ -60,8 +78,6 @@ while True:
     if selected_shell.isdigit() == True:
         break
 
-
-container = running_docker_containers[keyi(selected_container)]
 command = 'docker container exec -it ' + container + ' ' + shells[keyi(selected_shell)]
 
 subprocess.call(command, shell=True)
