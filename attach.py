@@ -31,10 +31,11 @@ def shells(cont):
     try:
         command = "docker exec " + cont + " chsh -l"
         process = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
-        shells, errors = process.communicate()[0].decode('utf-8').splitlines()
+        shells = process.communicate()[0].decode('utf-8').splitlines()
         return list(shells)
-    except(Exception):
-        print "unable to find available shells"
+    except Exception as e:
+        print "Unable to find available shells"
+        return None
         exit()
 
 def keyi(item):
@@ -62,6 +63,9 @@ if str(selected_container) == 'q':
 
 def clean_and_dedupe(shells):
     cleaned_shell = []
+    if (shells == None):
+        return ""
+
     for i, shell in enumerate(shells):
         base = os.path.basename(shell)
         if base in cleaned_shell:
@@ -76,12 +80,20 @@ for i, shell in enumerate(shells):
     print(str(i + 1) + ". " + shell);
 
 while True:
-    selected_shell = get_input("Select Shell (press 'q' to exit): ")
+    selected_shell = get_input("Select Shell (press 'q' to exit or enter the name of a shell): ")
+    shell_selected = ""
     if str(selected_shell) == 'q':
         exit();
-    if selected_shell.isdigit() == True:
+    elif selected_shell.isdigit() == True:
+        shell_selected = shells[keyi(selected_shell)]
         break
+    else:
+        shell_selected = selected_shell
+        if shell_selected in ["bash", "zsh"]:
+            break
+        else:
+            print "Please enter a valid shell ('bash') or press 'q' to exit"
 
-command = 'docker container exec -it ' + container + ' ' + shells[keyi(selected_shell)]
+command = 'docker container exec -it ' + container + ' ' + shell_selected
 
 subprocess.call(command, shell=True)
