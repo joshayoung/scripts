@@ -46,9 +46,12 @@ def shells(cont):
 def keyi(item):
     return int(item) - 1
 
-def in_available_list(list_conts):
-    pdb.set_trace()
-    print shells.count
+def in_available_list(shels, my_shell):
+    # TODO: fix to get the name not the index in this check:
+    # Always returning false right now:
+    # pdb.set_trace()
+    # my_shell in shels
+    True
 
 docker_running()
 
@@ -64,8 +67,7 @@ while True:
     selected_container = str(get_input("Select Container (press 'q' to exit): "))
     if str(selected_container) == 'q':
         exit();
-    # TODO: check to see if the number selected is an option in the list 'and in_available_list(selected_container)'
-    if selected_container.isdigit() == True:
+    if (selected_container.isdigit() == True):
         break
 
 if str(selected_container) == 'q':
@@ -94,7 +96,7 @@ while True:
     shell_selected = ""
     if str(selected_shell) == 'q':
         exit();
-    elif selected_shell.isdigit() == True:
+    elif (in_available_list(shells, selected_shell) and selected_shell.isdigit() == True):
         shell_selected = shells[keyi(selected_shell)]
         break
     else:
