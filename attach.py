@@ -28,10 +28,14 @@ def containers():
     return list(set(containers) - set(command_through_cmd))
 
 def shells(cont):
-    command = "docker exec " + cont + " chsh -l"
-    process = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
-    shells = process.communicate()[0].decode('utf-8').splitlines()
-    return list(shells)
+    try:
+        command = "docker exec " + cont + " chsh -l"
+        process = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
+        shells, errors = process.communicate()[0].decode('utf-8').splitlines()
+        return list(shells)
+    except(Exception):
+        print "unable to find available shells"
+        exit()
 
 def keyi(item):
     return int(item) - 1
