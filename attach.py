@@ -2,6 +2,7 @@
 import subprocess
 import sys
 import os
+import pdb; 
 
 command_through_cmd = []
 try: 
@@ -31,8 +32,12 @@ def shells(cont):
     try:
         command = "docker exec " + cont + " chsh -l"
         process = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
-        shells = process.communicate()[0].decode('utf-8').splitlines()
-        return list(shells)
+        shells = process.communicate()[0].decode('utf-8')
+
+        if shells.startswith("OCI runtime exec failed"):
+            raise Exception
+
+        return list(shells.splitlines())
     except Exception as e:
         print "Unable to find available shells"
         return None
@@ -40,6 +45,10 @@ def shells(cont):
 
 def keyi(item):
     return int(item) - 1
+
+def in_available_list(list_conts):
+    pdb.set_trace()
+    print shells.count
 
 docker_running()
 
@@ -55,6 +64,7 @@ while True:
     selected_container = str(get_input("Select Container (press 'q' to exit): "))
     if str(selected_container) == 'q':
         exit();
+    # TODO: check to see if the number selected is an option in the list 'and in_available_list(selected_container)'
     if selected_container.isdigit() == True:
         break
 
