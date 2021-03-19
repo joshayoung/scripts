@@ -21,6 +21,15 @@ def output_email():
     email = generate_email()
     p = Popen(['pbcopy'], stdout=PIPE, stdin=PIPE)
     p.communicate(input=email)
-    print email
+    return email
 
-output_email();
+def output_email_and_save_history():
+    email = output_email();
+    generation_date = datetime.now().strftime("%m-%d-%Y %I:%M")
+    f = open('email_history.txt', 'a+');
+    f.write(generation_date + ":\t" + email + "\n");
+    f.close();
+    print(email);
+
+output_email_and_save_history()
+
