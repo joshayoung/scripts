@@ -101,7 +101,10 @@ while True:
         break
     else:
         shell_selected = selected_shell
-        if shell_selected in ["bash", "zsh"]:
+        if (shell_selected.isdigit()):
+            shell_selected = shells[keyi(selected_shell)]
+            break;
+        elif (shell_selected in ["bash", "zsh"]):
             break
         else:
             print "Please enter a valid shell ('bash') or press 'q' to exit"
