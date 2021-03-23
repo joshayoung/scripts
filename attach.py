@@ -2,7 +2,7 @@
 import subprocess
 import sys
 import os
-import pdb; 
+import pdb
 
 command_through_cmd = []
 try: 
@@ -20,38 +20,26 @@ def docker_running():
     try:
         subprocess.check_output("docker stats --no-stream", stderr=subprocess.STDOUT, shell=True)
     except subprocess.CalledProcessError:
-        print "Docker not running"
-        exit()
+        print("Docker not running");
+        exit();
 
 def containers():
     process = subprocess.Popen(["docker container ls | sed '1 d' | awk '{ print $NF }'"], stdout=subprocess.PIPE, shell=True)
-    containers = process.communicate()[0].decode('utf-8').splitlines()
-    return list(set(containers) - set(command_through_cmd))
+    conts = process.communicate()[0].decode('utf-8').splitlines()
+    return list(set(conts) - set(command_through_cmd))
 
-def shells(cont):
-    try:
-        command = "docker exec " + cont + " chsh -l"
-        process = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True)
-        shells = process.communicate()[0].decode('utf-8')
+def shells(my_cont):
+    command = "docker exec " + my_cont + " chsh -l"
+    process = subprocess.Popen([command], stdout=subprocess.PIPE, shell=True, stderr=subprocess.PIPE)
 
-        if shells.startswith("OCI runtime exec failed"):
-            raise Exception
+    stdout, stderr = process.communicate()
+    if stdout == '':
+       return [];
 
-        return list(shells.splitlines())
-    except Exception as e:
-        print "Unable to find available shells"
-        return None
-        exit()
+    return list(stdout.decode('utf-8').splitlines())
 
 def keyi(item):
     return int(item) - 1
-
-def in_available_list(shels, my_shell):
-    # TODO: fix to get the name not the index in this check:
-    # Always returning false right now:
-    # pdb.set_trace()
-    # my_shell in shels
-    True
 
 docker_running()
 
@@ -63,11 +51,21 @@ if len(running_docker_containers) < 1:
 for i, container in enumerate(running_docker_containers):
     print(str(i + 1) + ". " + container)
 
+def in_my_list(ccc):
+    try:
+        ccc = int(ccc) - 1
+        running_docker_containers[ccc]
+        return True
+    except IndexError:
+        return False
+
 while True:
     selected_container = str(get_input("Select Container (press 'q' to exit): "))
     if str(selected_container) == 'q':
         exit();
-    if (selected_container.isdigit() == True):
+    if not in_my_list(selected_container):
+        continue
+    if selected_container.isdigit():
         break
 
 if str(selected_container) == 'q':
@@ -75,7 +73,7 @@ if str(selected_container) == 'q':
 
 def clean_and_dedupe(shells):
     cleaned_shell = []
-    if (shells == None):
+    if shells == None:
         return ""
 
     for i, shell in enumerate(shells):
@@ -86,17 +84,23 @@ def clean_and_dedupe(shells):
     return cleaned_shell
 
 container = running_docker_containers[keyi(selected_container)]
+
 shells = clean_and_dedupe(shells(container))
 
 for i, shell in enumerate(shells):
     print(str(i + 1) + ". " + shell);
 
 while True:
-    selected_shell = get_input("Select Shell (press 'q' to exit or enter the name of a shell): ")
+    # pdb.set_trace()
+    if not len(shells):
+        selected_shell = get_input("Enter the name of your shell (press 'q' to exit): ")
+    else:
+        selected_shell = get_input("Select Shell (press 'q' to exit or enter the name of a shell): ")
+
     shell_selected = ""
     if str(selected_shell) == 'q':
         exit();
-    elif (in_available_list(shells, selected_shell) and selected_shell.isdigit() == True):
+    elif (selected_shell.isdigit() == True):
         shell_selected = shells[keyi(selected_shell)]
         break
     else:
