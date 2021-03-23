@@ -1,5 +1,6 @@
 #! /usr/bin/python
 import sys
+import os
 from datetime import datetime
 from subprocess import Popen, PIPE
 
@@ -26,7 +27,8 @@ def output_email():
 def output_email_and_save_history():
     email = output_email();
     generation_date = datetime.now().strftime("%m-%d-%Y %I:%M")
-    f = open('email_history.txt', 'a+');
+    home = os.path.expanduser('~')
+    f = open(home + '/email_history.txt', 'a');
     f.write(generation_date + ":\t" + email + "\n");
     f.close();
     print(email);
