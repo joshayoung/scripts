@@ -16,11 +16,14 @@ do
   count=$((count + 1))
 done
 
-echo "Select stash to restore"
+echo "Select stash to restore, or [n] to exit"
 
 read number
 
+if [ $number == "n" ]; then
+  exit 0
+fi
+
 number=$((number - 1))
-echo $number
 
 git stash apply stash@{$number}
