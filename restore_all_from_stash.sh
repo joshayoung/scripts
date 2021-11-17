@@ -1,34 +1,26 @@
 #!/bin/bash
 
-#############################################################
-# This allows you to more easily restore a file from a stash.
+###################################################################
+# This allows you to more easily restore a stashed set of changes.
 # This script could be cleaned up to make it less verbose.
-#############################################################
+###################################################################
 
-git --no-pager stash list
+IFS=$'\n'
+all=$(git --no-pager stash list |cut -d$' ' -f2-)
+all_values=($all)
 
-echo ""
-echo "Select stash number"
-
-read number
-
-echo ""
-
-files=`git --no-pager stash show stash@{$number} --name-only`
-all_files=($(echo "$files" | tr " " "\n"))
-
-count=0;
-for i in "${all_files[@]}"
+count=1
+for i in "${all_values[@]}"
 do
-  echo $count - $i
+  echo $count: $i
   count=$((count + 1))
 done
 
-echo ""
-echo "Select file to  stage"
+echo "Select stash to restore"
 
-read file
+read number
 
-git checkout stash@{$number} -- ${all_files[$file]}
+number=$((number - 1))
+echo $number
 
-echo "${all_files[$file]} is now staged!"
+git stash apply stash@{$number}
