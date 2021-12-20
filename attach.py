@@ -93,13 +93,16 @@ for i, shell in enumerate(shells):
 while True:
     # pdb.set_trace()
     if not len(shells):
-        selected_shell = get_input("Enter the name of your shell (press 'q' to exit): ")
+        selected_shell = get_input("Enter the name of your shell (press 'q' to exit): [bash] ")
     else:
         selected_shell = get_input("Select Shell (press 'q' to exit or enter the name of a shell): ")
 
     shell_selected = ""
     if str(selected_shell) == 'q':
         exit();
+    elif str(selected_shell) == '':
+        shell_selected = 'bash'
+        break;
     elif (selected_shell.isdigit() == True):
         shell_selected = shells[keyi(selected_shell)]
         break
