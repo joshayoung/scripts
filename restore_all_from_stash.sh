@@ -16,9 +16,21 @@ do
   count=$((count + 1))
 done
 
-echo "Select stash to restore, or [n] to exit"
+echo "Select stash to restore, [c] to clear all stashes, or [n] to exit."
 
 read number
+
+if [ $number == "c" ]; then
+  echo "You are about to remove all of your stashes, are you sure? [y, n]."
+  read confirm
+  if [ $confirm != "y" ]; then
+    exit 0
+  fi
+
+  clear_stashes=$(git stash clear)
+  ${clear_stashes}
+  exit 0
+fi
 
 if [ $number == "n" ]; then
   exit 0
